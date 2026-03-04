@@ -6,6 +6,10 @@ A Claude Code skill for creating stunning, animation-rich HTML presentations —
 
 **Frontend Slides** helps non-designers create beautiful web presentations without knowing CSS or JavaScript. It uses a "show, don't tell" approach: instead of asking you to describe your aesthetic preferences in words, it generates visual previews and lets you pick what you like.
 
+
+https://github.com/user-attachments/assets/ef57333e-f879-432a-afb9-180388982478
+
+
 ### Key Features
 
 - **Zero Dependencies** — Single HTML files with inline CSS/JS. No npm, no build tools, no frameworks.
