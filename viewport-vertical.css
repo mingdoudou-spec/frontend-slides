@@ -1,0 +1,181 @@
+/* ===========================================
+   VERTICAL VIDEO MODE: 9:16 (1080x1920)
+   For short video backgrounds — iPhone screen ratio
+   Include this INSTEAD of viewport-base.css for vertical presentations
+   =========================================== */
+
+/* 1. Fixed canvas size for consistent output */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    background: var(--bg-primary, #0a0a0a);
+}
+
+/* 2. Each slide = exact 1080x1920 */
+.slide {
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    scroll-snap-align: start;
+}
+
+/* 3. Content container — generous padding for mobile readability */
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    padding: var(--slide-padding);
+}
+
+/* 4. Typography — sized for mobile viewing (larger than desktop) */
+:root {
+    /* Chinese text needs larger sizes for readability */
+    --title-size: 72px;
+    --h2-size: 56px;
+    --h3-size: 44px;
+    --body-size: 36px;
+    --small-size: 28px;
+    --caption-size: 24px;
+
+    /* Generous spacing for vertical layout */
+    --slide-padding: 80px 72px;
+    --content-gap: 48px;
+    --element-gap: 32px;
+
+    /* Line heights for Chinese text */
+    --title-lh: 1.3;
+    --body-lh: 1.8;
+}
+
+/* 5. Headings */
+h1, .title {
+    font-size: var(--title-size);
+    line-height: var(--title-lh);
+    letter-spacing: -0.02em;
+}
+
+h2, .subtitle {
+    font-size: var(--h2-size);
+    line-height: 1.4;
+}
+
+h3 {
+    font-size: var(--h3-size);
+    line-height: 1.4;
+}
+
+/* 6. Body text */
+p, li, .body-text {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+
+.small, .caption {
+    font-size: var(--small-size);
+    line-height: 1.6;
+}
+
+/* 7. Cards/containers — fill width, constrain height */
+.card, .container, .content-box {
+    max-width: 936px; /* 1080 - 72*2 padding */
+    max-height: 1600px;
+}
+
+/* 8. Lists — vertical stacking only */
+.feature-list, .bullet-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--element-gap);
+}
+
+.feature-list li, .bullet-list li {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+
+/* 9. Grids — single column for vertical */
+.grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--content-gap);
+}
+
+/* 10. Images — constrained to vertical viewport */
+img, .image-container {
+    max-width: 100%;
+    max-height: 960px; /* half of 1920 */
+    object-fit: contain;
+}
+
+/* ===========================================
+   VERTICAL-SPECIFIC LAYOUTS
+   Common patterns for short video slides
+   =========================================== */
+
+/* Centered title layout */
+.layout-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    gap: var(--content-gap);
+}
+
+/* Top-aligned with breathing room */
+.layout-top {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 200px;
+    gap: var(--content-gap);
+}
+
+/* Bottom-heavy (title top, content bottom) */
+.layout-split {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+/* Big number/stat highlight */
+.big-number {
+    font-size: 160px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.03em;
+}
+
+.big-number + .caption {
+    font-size: var(--body-size);
+    margin-top: 24px;
+}
+
+/* Accent bar — common vertical video element */
+.accent-bar {
+    width: 80px;
+    height: 6px;
+    background: var(--accent, #ff5722);
+    border-radius: 3px;
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}

@@ -1,6 +1,6 @@
 ---
 name: frontend-slides
-description: Create stunning, animation-rich HTML presentations from scratch or by converting PowerPoint files. Use when the user wants to build a presentation, convert a PPT/PPTX to web, or create slides for a talk/pitch. Helps non-designers discover their aesthetic through visual exploration rather than abstract choices.
+description: Create stunning, animation-rich HTML presentations from scratch or by converting PowerPoint files. Also supports VERTICAL 9:16 mode for short video backgrounds (iPhone screen). Use when the user wants to build a presentation, convert a PPT/PPTX to web, create slides for a talk/pitch, or generate vertical video slide backgrounds. Helps non-designers discover their aesthetic through visual exploration rather than abstract choices.
 ---
 
 # Frontend Slides
@@ -65,9 +65,10 @@ These invariants apply to EVERY slide in EVERY presentation:
 
 Determine what the user wants:
 
-- **Mode A: New Presentation** — Create from scratch. Go to Phase 1.
+- **Mode A: New Presentation** — Create from scratch (landscape 16:9). Go to Phase 1.
 - **Mode B: PPT Conversion** — Convert a .pptx file. Go to Phase 4.
 - **Mode C: Enhancement** — Improve an existing HTML presentation. Read it, understand it, enhance. **Follow Mode C modification rules below.**
+- **Mode D: Vertical Video (竖版短视频)** — Create 9:16 vertical slides for short video backgrounds. Go to Phase V.
 
 ### Mode C: Modification Rules
 
@@ -185,6 +186,147 @@ If images were provided, the slide outline already incorporates them from Step 1
 
 ---
 
+## Phase V: Vertical Video Mode (竖版短视频)
+
+For short video backgrounds — fixed 1080×1920 (9:16 iPhone ratio).
+
+### Workflow (Simplified)
+
+1. **User provides script/text** — oral script, bullet points, or topic
+2. **Auto-analyze & split** — run Script Analyzer (Step V.1) to extract slide structure
+3. **Show split plan for confirmation** — present the slide-by-slide breakdown to user
+4. **Style selection** — pick from presets (same as Phase 2, but rendered vertically)
+5. **Generate HTML** — using [viewport-vertical.css](viewport-vertical.css) instead of viewport-base.css
+6. **Open in browser** — user screenshots or screen-records for video
+
+### Step V.1: Script Analyzer (自动拆稿)
+
+When user provides a continuous script, **automatically** analyze and classify each segment into slide types. This is the core intelligence of vertical mode — the user should NOT need to manually split.
+
+**Classification rules — scan the script and tag each segment:**
+
+| 检测信号 | 归类为 | 处理方式 |
+|---------|--------|---------|
+| 开头的问句、反常识陈述、冲突性判断 | **封面页** | 提炼为 ≤8 字标题 + ≤15 字副标题 |
+| "我认为"、"核心是"、"关键在于"、因果论述、立场表达 | **观点页** | 提炼为 ≤10 字标题 + ≤50 字正文 |
+| 并列结构（"第一…第二…"、"A、B、C"）、列举、对比 | **要点页** | 提炼为 ≤10 字标题 + 2-3 条要点 |
+| 短句、节奏感强、情绪浓缩、可独立引用的判断句 | **金句页** | 原文保留或微调，≤25 字居中 |
+| 具体数字、百分比、统计、排名 | **数据页** | 提取核心数字 + ≤15 字说明 |
+| 两组事物的正反对照 | **对比页** | 2 列各 2-3 条，每条 ≤12 字 |
+| "所以"、"总结"、行动建议、关注引导 | **结尾页** | 提炼为 ≤15 字 CTA |
+
+**分析输出格式（给用户确认）：**
+
+```
+📋 拆稿结果（共 X 页）
+
+第 1 页 [封面页]
+  标题：XXXXX
+  副标题：XXXXXXXXXX
+
+第 2 页 [观点页]
+  标题：XXXXX
+  正文：XXXXXXXXXXXXXXXXXX
+
+第 3 页 [金句页]
+  "XXXXXXXXXXXXXXX"
+
+第 4 页 [要点页]
+  标题：XXXXX
+  · XXXXXXXXXX
+  · XXXXXXXXXX
+  · XXXXXXXXXX
+
+...
+
+第 X 页 [结尾页]
+  CTA：XXXXXXXXXX
+```
+
+**分析原则：**
+- **提炼不是摘抄**。口播稿是口语化的，竖版文字需要更凝练。去掉口头禅、过渡词、重复表达
+- **保留原文精华**。金句不改动原句的节奏和力度，除非超字数
+- **一个观点一页**。如果原文一段话包含 2 个观点，拆成 2 页
+- **数据必须突出**。原文中嵌在句子里的数字，单独拎出来做数据页
+- **不要生造内容**。所有文字必须来源于用户的原稿，不添加用户没说过的观点
+- **总页数控制**：1 分钟脚本 → 5-8 页，2 分钟 → 8-12 页，3 分钟 → 12-18 页
+
+**确认后进入风格选择（Phase 2），然后生成 HTML。**
+
+### Vertical Content Density Limits (中文)
+
+**CRITICAL: Vertical slides have MUCH LESS space per slide than landscape. Follow these limits strictly.**
+
+| 页面类型 | 最大内容 | 字数上限 |
+|----------|---------|---------|
+| 封面页 | 1 标题 + 1 副标题 | 标题 4-8 字，副标题 8-15 字 |
+| 观点页 | 1 标题 + 1 段正文 | 标题 ≤10 字，正文 ≤50 字 |
+| 要点页 | 1 标题 + 2-3 条要点 | 标题 ≤10 字，每条 ≤20 字 |
+| 金句页 | 1 句话 + 出处 | 金句 ≤25 字 |
+| 数据页 | 1 大数字 + 1 行说明 | 说明 ≤15 字 |
+| 对比页 | 2 列对比（各 2-3 条） | 每条 ≤12 字 |
+| 结尾页 | 1 行动号召 + 账号信息 | CTA ≤15 字 |
+
+**每页总字数硬上限：60 字（含标题）。超过就拆页。**
+
+### Script-to-Slides Splitting Rules
+
+When user provides a continuous script, split using these rules:
+
+1. **每个核心观点 = 1 页**。不要把 2 个观点塞一页
+2. **转折/递进处断开**。"但是"、"所以"、"更重要的是" = 新页面
+3. **数据单独成页**。一个数字配一句解释，视觉冲击力最大
+4. **金句单独成页**。短句大字，留白充足
+5. **首页要有钩子**。问句或反常识陈述
+6. **尾页要有 CTA**。"关注"、"点赞"、"评论区告诉我"
+
+### Vertical Generation Rules
+
+- Use [viewport-vertical.css](viewport-vertical.css) instead of viewport-base.css
+- Fixed size: `width: 1080px; height: 1920px` (not viewport-relative)
+- Font sizes use fixed px (not clamp) — because canvas size is fixed
+- Chinese font stack: `'Noto Sans SC', 'PingFang SC', sans-serif` as fallback
+- Display fonts still from Google Fonts / Fontshare for personality
+- All slides in a single HTML file, vertically stacked, with scroll-snap
+- Navigation: arrow keys + swipe
+- **Safe zone**: Keep text within 72px padding on all sides (avoid phone notch/home indicator area)
+
+### Vertical Style Presets (Recommended)
+
+For short video, these presets work best in vertical:
+
+| 适合场景 | 推荐风格 |
+|---------|---------|
+| 教育/知识 | Bold Signal, Swiss Modern, Paper & Ink |
+| 情感/故事 | Dark Botanical, Vintage Editorial |
+| 科技/互联网 | Neon Cyber, Terminal Green, Electric Studio |
+| 亲子/生活 | Pastel Geometry, Split Pastel, Notebook Tabs |
+
+### Step V.2: Video Recording Interactivity (录屏增强)
+
+When the user plans to **screen-record** or **live-stream** with slides as background (not just screenshot), add three interactivity layers. **Before generating, read [video-recording-interactivity.md](video-recording-interactivity.md)** for full implementation details.
+
+1. **Continuous Micro-Animations** — Decorative elements (dots, lines, shapes) float/breathe/shimmer infinitely. **Never animate text.** Keeps slides alive during 1-2 min talking segments.
+2. **Click-to-Highlight** — Titles, labels, icons respond to tap with type-specific animations. **Never add click animation to body text or bullet points** (tested and rejected — looks bad).
+3. **Canvas Pen Overlay** — Press P to toggle drawing mode. Red strokes auto-fade after 2s. Uses `pointer-events: none/auto` toggle so it doesn't interfere with click-highlight when off.
+
+**Ask the user:** "需要录屏增强功能吗？（微动效 + 点击高亮 + 画笔标注）" If yes, include all three. If the user only wants screenshots/图文, skip this step.
+
+### Output & Usage
+
+1. Generate single HTML file to `~/Desktop/video-pipeline/` (or user-specified path)
+2. Open in Chrome
+3. User can:
+   - **录屏**: Chrome 全屏 → 手机投屏或直接录屏翻页
+   - **截图**: 每页截图做图文轮播（小红书/抖音图文）
+   - **DevTools**: `Cmd+Option+I` → 设备模拟 → iPhone 14 Pro → 逐页截图
+4. If recording interactivity enabled:
+   - Micro-animations run automatically (decorative elements only)
+   - Click/tap titles, labels, icons for highlight effects
+   - Press **P** to toggle pen drawing mode, strokes auto-fade in 2s
+
+---
+
 ## Phase 4: PPT Conversion
 
 When converting PowerPoint files:
@@ -213,7 +355,9 @@ When converting PowerPoint files:
 | File | Purpose | When to Read |
 |------|---------|-------------|
 | [STYLE_PRESETS.md](STYLE_PRESETS.md) | 12 curated visual presets with colors, fonts, and signature elements | Phase 2 (style selection) |
-| [viewport-base.css](viewport-base.css) | Mandatory responsive CSS — copy into every presentation | Phase 3 (generation) |
-| [html-template.md](html-template.md) | HTML structure, JS features, code quality standards | Phase 3 (generation) |
-| [animation-patterns.md](animation-patterns.md) | CSS/JS animation snippets and effect-to-feeling guide | Phase 3 (generation) |
+| [viewport-base.css](viewport-base.css) | Mandatory responsive CSS — copy into every landscape presentation | Phase 3 (generation) |
+| [viewport-vertical.css](viewport-vertical.css) | Fixed 1080×1920 CSS — copy into every vertical presentation | Phase V (vertical video) |
+| [html-template.md](html-template.md) | HTML structure, JS features, code quality standards | Phase 3 / Phase V (generation) |
+| [animation-patterns.md](animation-patterns.md) | CSS/JS animation snippets and effect-to-feeling guide | Phase 3 / Phase V (generation) |
+| [video-recording-interactivity.md](video-recording-interactivity.md) | Micro-animations, click-to-highlight, pen drawing overlay for screen recording | Phase V Step V.2 (when user records video) |
 | [scripts/extract-pptx.py](scripts/extract-pptx.py) | Python script for PPT content extraction | Phase 4 (conversion) |
